@@ -1,0 +1,11 @@
+{{#if error}}
+    <p>
+        Error: {{error}}
+    </p>
+{{/if}}
+<form class="" action="/item/update/{{id}}" method="post">
+  <input type="hidden" name="_csrf" value="{{csrftoken}}">
+    <h3>Edit snippet</h3>
+  <textarea rows='6' cols='60' name="itemText"  required="required">{{text}}</textarea><br>
+  <button>Update snippet</button>
+</form>

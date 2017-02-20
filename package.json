@@ -1,0 +1,40 @@
+{
+  "name": "testwebapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ek222mw/testwebapi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ek222mw/testwebapi/issues"
+  },
+  "homepage": "https://github.com/ek222mw/testwebapi#readme",
+  "dependencies": {
+    "async": "^2.1.4",
+    "body-parser": "^1.15.2",
+    "dotenv": "^2.0.0",
+    "escape-html": "^1.0.3",
+    "express": "^4.14.1",
+    "express-github-webhook": "^1.0.5",
+    "express-handlebars": "^3.0.0",
+    "github": "^8.1.1",
+    "github-oauth": "^0.2.2",
+    "githubhook": "^1.7.1",
+    "octonode": "^0.7.7",
+    "passport": "^0.3.2",
+    "passport-github": "^1.1.0",
+    "path": "^0.12.7",
+    "request": "^2.79.0",
+    "request-promise-native": "^1.0.3",
+    "socket.io": "^1.7.2",
+    "underscore.string": "^3.3.4"
+  }
+}
