@@ -7,7 +7,22 @@ var token;
 var express = require("express"),
     app = express(),
     port = 3000;
+var Slack = require("slack-node");
+apiToken = process.env['SLACK_API_TOKEN'];
 
+slack = new Slack(apiToken);
+
+/*slack.api("channels.invite", function(err, response) {
+  console.log(response);
+});
+
+slack.api('chat.postMessage', {
+  text:'hello from nodejs',
+  channel:'#general'
+
+}, function(err, response){
+  console.log(response);
+});*/
     app.engine(".hbs", exphbs({
         defaultLayout: "main",
         extname: ".hbs"
@@ -18,6 +33,7 @@ var express = require("express"),
     app.use(express.static(path.join(__dirname, "public")));
 
     app.use("/", require("./routes/home.js"));
+    app.use("/slack/invite", require("./routes/slack.js"));
     /*app.use("/login", require("./routes/login.js"));
     app.use("/callback", require("./routes/callback.js"));
 */
@@ -52,12 +68,14 @@ githubOAuth.on('token', function(_token, serverResponse) {
   console.log(token);
   const gitAPI = require("./webapi/gitAPI.js")(token);
   gitAPI.getOrganizations().then(orgs => {
-    console.log(orgs);
-    serverResponse.end(JSON.stringify(_token));
+    //console.log(orgs);
+    //serverResponse.end(JSON.stringify(_token));
   });
 
 });
 
+
+
 var server = app.listen(port, function() {
-  console.log('Listening on port %d', server.address().port);
+  console.log('Listening on port %d',port);
 });

@@ -1,0 +1,12 @@
+{{#if error}}
+    <p>
+        {{error}}
+    </p>
+{{/if}}
+
+<h1>Invite to Slack</h1>
+<form class="" action="/slack/invite" method="post">
+  <p>Email:</p>
+  <input type="text" name="email" value="">
+  <button>Send invite</button>
+</form>
