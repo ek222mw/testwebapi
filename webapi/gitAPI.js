@@ -1,28 +1,16 @@
 /*jshint esversion: 6 */
-const rp = require('request-promise-native');
-const USER_AGENT = "hapi-github-oauth-poc";
-const HOOK_ENDPOINT = "http://32cf8a0e.ngrok.io/hook";
 
-function _fetchAPIData(authorizationToken, url) {
-    let options = {
-        uri: url,
-        headers: {
-            'User-Agent': USER_AGENT,
-            "Authorization": `token ${authorizationToken}`
-        },
-        json: true
-    };
+var useragent = "express-github-oauth";
+var webhookEnd = "http://b7bab060.ngrok.io/githubwebhook";
+var rp = require('request-promise-native');
 
-    return rp(options);
-}
-
-function _postAPIData(authorizationToken, url, data) {
-    let options = {
+function postData(authToken, url, data) {
+    var options = {
         method: "POST",
         uri: "https://api.github.com/orgs/testarenorg/hooks",
         headers: {
-            'User-Agent': USER_AGENT,
-            "Authorization": `token ${authorizationToken}`
+            'User-Agent': useragent,
+            "Authorization": `token ${authToken}`
         },
         json: true,
         body: data
@@ -30,52 +18,62 @@ function _postAPIData(authorizationToken, url, data) {
     return rp(options);
 }
 
-module.exports = (authorizationToken) => {
+function fetchData(authToken, url) {
+    var options = {
+        uri: url,
+        headers: {
+            'User-Agent': useragent,
+            "Authorization": `token ${authToken}`
+        },
+        json: true
+    };
+    return rp(options);
+}
+
+module.exports = (authToken) => {
     return {
-    // Organizations
-    getOrganizations: function() {
-        const url = "https://api.github.com/user/orgs";
-        return _fetchAPIData(authorizationToken, url);
+
+    organizationWebhookExists: function(org) {
+        // Does return true organization webhook already have been created
     },
-    getOrganization: function(organization) {
-        console.log(authorizationToken);
-        const url = `https://api.github.com/orgs/${organization}`;
-        return _fetchAPIData(authorizationToken, url);
-    },
-    getOrganizationRepos: function(organization) {
-        const url = `https://api.github.com/orgs/${organization}/repos`;
-        return _fetchAPIData(authorizationToken, url);
-    },
-    getOrganizationEvents: function(organization) {
-        const url = `https://api.github.com/orgs/${organization}/events`;
-        return _fetchAPIData(authorizationToken, url);
-    },
-    organizationWebhookExists: function(organization) {
-        // Return true if organization webhook already created
-    },
-    createOrganizationWebhook: function(organization, events) {
+    createOrganizationWebhook: function(org, events) {
+        var url = `https://api.github.com/orgs/${org}/hooks`;
         events = events || ["push"];
-        const url = `https://api.github.com/orgs/${organization}/hooks`;
-        const data = {
+        var webhookdata = {
             "name": "web",
             "active": true,
             "events": events,
             "config": {
-                "url": "http://32cf8a0e.ngrok.io/hook",
+                "url": "http://b7bab060.ngrok.io/githubwebhook",
                 "content_type": "json"
             }
         };
 
-        return _postAPIData(authorizationToken, url, data);
+        return postData(authToken, url, webhookdata);
     },
-
-
-    // Repos
-    repoWebhookExists: function(repo, authorizationToken) {
+    // Orgs
+    getAllOrganizations: function() {
+        var url = "https://api.github.com/user/orgs";
+        return fetchData(authToken, url);
+    },
+    getOneOrganization: function(org) {
+        var url = `https://api.github.com/orgs/`+org;
+        return fetchData(authToken, url);
+    },
+    getOneOrganizationRepos: function(org) {
+        var url = `https://api.github.com/orgs/`+org+'/repos';
+        return fetchData(authToken, url);
+    },
+    getOneOrganizationEvents: function(org) {
+        var url = `https://api.github.com/orgs/`+org+'/events';
+        return fetchData(authToken, url);
+    },
+    createRepoWebhook: function(repo, authToken) {
 
     },
-    createRepoWebhook: function(repo, authorizationToken) {
+    checkIfRepoWebhookExists: function(repo, authToken) {
 
     }
+
 };
 };

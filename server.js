@@ -8,32 +8,33 @@ var express = require("express"),
     app = express(),
     port = 3000;
 var Slack = require("slack-node");
-apiToken = process.env['SLACK_API_TOKEN'];
+var slackApiToken = process.env['SLACK_API_TOKEN'];
+const gitAPI = require("./webapi/gitAPI.js")(token);
+var message = "new repo created";
+var data = "DATA";
+var hookmsg ='message: '+message+', data: '+data+'';
+var slackUser = "ek222mw";
+slack = new Slack(slackApiToken);
 
-slack = new Slack(apiToken);
-
-/*slack.api("channels.invite", function(err, response) {
-  console.log(response);
-});
-
-slack.api('chat.postMessage', {
-  text:'hello from nodejs',
-  channel:'#general'
-
-}, function(err, response){
+//send webhook to slack and user gets notification from the slackbot.
+/*var slackAPI = require("./webapi/slackAPI.js")(slackApiToken);
+slackAPI.postWebhook(slackUser, hookmsg).then(function(response)
+{
   console.log(response);
 });*/
-    app.engine(".hbs", exphbs({
-        defaultLayout: "main",
-        extname: ".hbs"
-    }));
-    app.set("view engine", ".hbs");
-    app.use(bodyParser.urlencoded({ extended: true }));
-    app.use(bodyParser.json());
-    app.use(express.static(path.join(__dirname, "public")));
 
-    app.use("/", require("./routes/home.js"));
-    app.use("/slack/invite", require("./routes/slack.js"));
+app.engine(".hbs", exphbs({
+    defaultLayout: "main",
+    extname: ".hbs"
+}));
+app.set("view engine", ".hbs");
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use("/", require("./routes/home.js"));
+app.use("/slack/invite", require("./routes/slack.js"));
+
     /*app.use("/login", require("./routes/login.js"));
     app.use("/callback", require("./routes/callback.js"));
 */
@@ -63,18 +64,15 @@ githubOAuth.on('error', function(err) {
 });
 
 githubOAuth.on('token', function(_token, serverResponse) {
-  //console.log("test"+_token.access_token);
+
   token = _token.access_token;
-  console.log(token);
-  const gitAPI = require("./webapi/gitAPI.js")(token);
-  gitAPI.getOrganizations().then(orgs => {
-    //console.log(orgs);
-    //serverResponse.end(JSON.stringify(_token));
+  var gitAPI = require("./webapi/gitAPI.js")(token);
+  gitAPI.getAllOrganizations().then(orgs => {
+    console.log(orgs);
+    serverResponse.end(JSON.stringify(_token));
   });
 
 });
-
-
 
 var server = app.listen(port, function() {
   console.log('Listening on port %d',port);
