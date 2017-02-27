@@ -1,0 +1,24 @@
+{{#if error}}
+    <p>
+        {{error}}
+    </p>
+{{/if}}
+<h1>Organisation</h1>
+<span class="left">
+<h2 class="headerlist">Repos</h2>
+<ul id="cont" class="list"></ul>
+<ul class="list">
+  {{#each repos}}
+    <li class="cont" id="li{{id}}" >Title: {{ name }}<br>
+     <span class="owner">Owner: {{owner}}<span><br>
+     <span class="desc">Description: {{desc}}</span><br>
+     <a href="{{link}}">{{link}}</a><br>
+     <div id="{{id}}">Issues: {{openIssues}}</div>
+     Created at: {{dateCreated}}<br>
+     Updated at: {{dateUpdated}}<br>
+   </li>
+  {{/each}}
+</ul>
+</span>
+<h2 class="headernotes">Notifications</h2><br>
+<ul id="messages" class="notes"></ul><br>

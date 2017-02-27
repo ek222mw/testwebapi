@@ -1,0 +1,9 @@
+<h2>Choose org to render</h2>
+<form class="" action="/orgs" method="post">
+<select id="org" name="org">
+  {{#each orgs}}
+    <option value="{{this}}">{{this}}</option>
+  {{/each}}
+</select>
+<button>Login</button>
+</form>

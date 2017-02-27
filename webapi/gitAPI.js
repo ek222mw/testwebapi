@@ -27,6 +27,7 @@ function fetchData(authToken, url) {
         },
         json: true
     };
+    console.log(options);
     return rp(options);
 }
 
@@ -59,6 +60,12 @@ module.exports = (authToken) => {
     getOneOrganization: function(org) {
         var url = `https://api.github.com/orgs/`+org;
         return fetchData(authToken, url);
+    },
+    getUser:function()
+    {
+      
+      var url = `https://api.github.com/user`;
+      return fetchData(authToken, url);
     },
     getOneOrganizationRepos: function(org) {
         var url = `https://api.github.com/orgs/`+org+'/repos';
