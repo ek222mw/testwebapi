@@ -4,6 +4,7 @@ var port = 3000;
 var token;
 var Org = require("../models/Org");
 var gitAPI;
+var Notes = require("../models/Notifications.js");
 var githubOAuth = require('github-oauth')({
   githubClient: process.env['GITHUB_CLIENT_ID'],
   githubSecret: process.env['GITHUB_CLIENT_SECRET'],
@@ -31,7 +32,50 @@ githubOAuth.on('error', function(err) {
 router.route("/")
     .get(function(req, res) {
 
-      res.render("home/index");
+      console.log("login bool "+res.app.locals.login);
+
+      if(res.app.locals.login)
+      {
+        req.session.token = res.app.locals.token;
+        req.session.login = res.app.locals.login;
+        req.session.orgs = res.app.locals.orgs;
+        //todo save org pick in database
+        gitAPI = require("../webapi/gitAPI.js")(req.session.token);
+        gitAPI.getUser().then(function(user)
+        {
+          //console.log("USER: "+user.login);
+            Notes.findOne({username:user.login}, function(err, result)
+            {
+
+              if(result === null)
+              {
+                return res.render("home/index", {error:"Couldn't find notifications to that user"});
+              }
+              else{
+
+                if(result.slack === true)
+                {
+                  console.log("TRUE");
+                  res.render("home/index", {On: true});
+                }
+                else if(result.slack === false)
+                {
+                  console.log("FALSE");
+                  res.render("home/index", {Off: true});
+                }
+              }
+
+
+
+            });
+
+        });
+      }
+      else{
+        res.render("home/index");
+      }
+
+
 });
 
 router.route("/login")
@@ -42,16 +86,16 @@ router.route("/login")
 });
 router.route("/callback")
     .get(function(req, res) {
-      console.log("received callback");
       return githubOAuth.callback(req, res);
 
 
 
 });
 
-githubOAuth.on('token', function(_token, serverResponse) {
+githubOAuth.on('token', function(_token, res) {
   //console.log(_token);
   token = _token.access_token;
+
   gitAPI = require("../webapi/gitAPI.js")(token);
   gitAPI.getUser().then(function(user)
   {
@@ -65,124 +109,13 @@ githubOAuth.on('token', function(_token, serverResponse) {
           orgnames.push(orgs[j].login);
           //console.log(orgs[j].login);
         }
-        serverResponse.render("orgs/pick", {orgs:orgnames});
+        res.app.locals.orgs = orgnames;
+        res.app.locals.login = true;
+        res.app.locals.token = token;
+        var page = ("../");
+        res.redirect(301,page);
   });
 
 });
-
-router.route("/orgs")
-  .get(function(req, res) {
-
-    gitAPI = require("../webapi/gitAPI.js")(token);
-    //console.log(gitAPI);
-  gitAPI.getUser().then(function(user)
-  {
-
-
-    Org.findOne({username:user.login}, function(err, result)
-    {
-      if(result === null)
-      {
-        res.render("orgs/index", {error:"No org picked by user"});
-      }
-      else{
-
-
-        gitAPI.getOneOrganizationRepos(result.org).then(function(response)
-        {
-          //console.log(response);
-
-          var contxt = {
-
-            items: response.map(function(item) {
-              return {
-                id: item.id,
-                name: item.name,
-                owner: item.owner.login,
-                desc: item.description,
-                link:item.html_url,
-                dateCreated: item.created_at,
-                dateUpdated: item.updated_at,
-                forks:item.forks,
-                openIssues: item.open_issues_count
-              };
-            }),
-          };
-          //console.log(contxt.items.length);
-            //console.log(response[i].name);
-
-          //console.log("contxt: "+contxt.items);
-            res.render("orgs/index", {repos:contxt.items});
-          });
-        }
-    });
-  }).catch(function(err)
-{
-  res.render("orgs/index", {error:"Bad token or no token given"});
-});
-
-
-
-}).post(function(req,res)
-  {
-    //todo save org pick in database
-    gitAPI = require("../webapi/gitAPI.js")(token);
-    gitAPI.getUser().then(function(user)
-    {
-      //console.log("USER: "+user.login);
-        Org.findOne({username:user.login, org:req.body.org}, function(err, result)
-        {
-          
-          if(result === null)
-          {
-            var org = new Org({
-              org: req.body.org,
-              username: user.login
-            });
-          //saving user in db with mongoose command .save and send flash mess-
-          org.save().then(function() {
-
-          }).catch(function(error) {
-            console.log(error.message);
-            //res.render("users/register", {error: "Something went wrong with the registration"});
-          });
-          }
-
-        });
-
-    });
-
-    gitAPI.getOneOrganizationRepos(req.body.org).then(function(response)
-    {
-      //console.log(response);
-      var contxt = {
-
-        items: response.map(function(item) {
-          return {
-            id: item.id,
-            name: item.name,
-            owner: item.owner.login,
-            desc: item.description,
-            link:item.html_url,
-            dateCreated: item.created_at,
-            dateUpdated: item.updated_at,
-            forks:item.forks,
-            openIssues: item.open_issues_count
-          };
-        }),
-      };
-      //console.log(contxt.items.length);
-        //console.log(response[i].name);
-
-      //console.log("contxt: "+contxt.items);
-        res.render("orgs/index", {repos:contxt.items});
-    });
-
-
-  });
-
-
-
-
 
 module.exports = router;

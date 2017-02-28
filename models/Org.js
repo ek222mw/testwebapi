@@ -4,7 +4,7 @@ let mongoose = require("mongoose");
 
 let orgSchema = mongoose.Schema({
   org: { type: String, required: true },
-  username: {type: String, required: true}
+  username: {type: String, required: true, unique:true,}
 });
 
 

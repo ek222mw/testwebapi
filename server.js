@@ -3,6 +3,7 @@ require('dotenv').config();
 let exphbs = require("express-handlebars");
 let bodyParser = require('body-parser');
 let path = require('path');
+var session = require('express-session');
 var token;
 var express = require("express"),
     app = express(),
@@ -32,13 +33,28 @@ app.set("view engine", ".hbs");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(function(req,res, next) {
+  res.locals.token ="";
+  res.locals.login = "";
+  res.locals.orgs ="";
+  next();
+});
+app.use(session({
+    name:   "sessionforserver",
+    secret: process.env['SESSION_SECRET'], // hide this variabel later
+    saveUninitialized: false,
+    resave: false,
+    cookie: {
+        secure: true,
+        httpOnly: true,
+        maxAge: 2000 * 60 * 60 * 24 // lives in 2 days
+    }
+}));
 
 app.use("/", require("./routes/home.js"));
-app.use("/slack/invite", require("./routes/slack.js"));
+app.use("/slack", require("./routes/slack.js"));
+app.use("/github", require("./routes/github.js"));
 
-    /*app.use("/login", require("./routes/login.js"));
-    app.use("/callback", require("./routes/callback.js"));
-*/
 
 
 

@@ -1,0 +1,27 @@
+<nav>
+<h1>Menu</h1>
+<ul>
+  <li><a href="../">Start page</a></li>
+  <li><a href="../login">login github</a></li>
+  <li><a href="../slack/invite">Send slack invite</a></li>
+  <li><a href="../github/orgs">Orgs</a></li>
+  <li><a href="../github/pickorg">Pick org to view</a></li><br>
+</ul>
+<p>Slack webhooks</p>
+<form class="" action="../slack/notificationStatus" method="post">
+  {{#if On}}
+  <label class="radio-inline"><input type="radio" name="optradio" value="true" checked="checked">On</label>
+  <label class="radio-inline"><input type="radio" name="optradio" value="false">Off</label>
+  <button>Send</button>
+  {{/if}}
+  {{#if Off}}
+  <label class="radio-inline"><input type="radio" name="optradio" value="true">On</label>
+  <label class="radio-inline"><input type="radio" name="optradio" value="false" checked="checked">Off</label>
+  <button>Send</button>
+  {{/if}}
+
+
+
+
+</form>
+</nav>

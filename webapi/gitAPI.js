@@ -27,18 +27,17 @@ function fetchData(authToken, url) {
         },
         json: true
     };
-    console.log(options);
     return rp(options);
 }
 
 module.exports = (authToken) => {
     return {
 
-    organizationWebhookExists: function(org) {
+    checkIfOrganizationWebhookExists: function(org) {
         // Does return true organization webhook already have been created
     },
-    createOrganizationWebhook: function(org, events) {
-        var url = `https://api.github.com/orgs/${org}/hooks`;
+    addOrganizationWebhook: function(org, events) {
+        var url = "https://api.github.com/orgs/"+org+"/hooks";
         events = events || ["push"];
         var webhookdata = {
             "name": "web",
@@ -58,24 +57,24 @@ module.exports = (authToken) => {
         return fetchData(authToken, url);
     },
     getOneOrganization: function(org) {
-        var url = `https://api.github.com/orgs/`+org;
+        var url = "https://api.github.com/orgs/"+org;
         return fetchData(authToken, url);
     },
     getUser:function()
     {
-      
+
       var url = `https://api.github.com/user`;
       return fetchData(authToken, url);
     },
     getOneOrganizationRepos: function(org) {
-        var url = `https://api.github.com/orgs/`+org+'/repos';
+        var url = "https://api.github.com/orgs/"+org+'/repos';
         return fetchData(authToken, url);
     },
     getOneOrganizationEvents: function(org) {
-        var url = `https://api.github.com/orgs/`+org+'/events';
+        var url = "https://api.github.com/orgs/"+org+'/events';
         return fetchData(authToken, url);
     },
-    createRepoWebhook: function(repo, authToken) {
+    addRepoWebhook: function(repo, authToken) {
 
     },
     checkIfRepoWebhookExists: function(repo, authToken) {

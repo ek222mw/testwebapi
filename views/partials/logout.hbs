@@ -1,0 +1,9 @@
+{{#if loggedin }}
+<form method="post" action="../users/logout" class="inl">
+  <input type="hidden" name="" value="">
+  <input type="hidden" name="_csrf" value="{{csrftoken}}">
+  <button type="submit" name="" value="" class="link-btn">
+    Logout
+  </button>
+</form>
+{{/if}}
